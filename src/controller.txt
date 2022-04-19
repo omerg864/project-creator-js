@@ -1,0 +1,13 @@
+import asyncHandler from 'express-async-handler';
+import -name- from '../models/-name-Model.js';
+
+const get-name-s = asyncHandler(async (req, res, next) => {
+    const -name-s = await -name-.find();
+    res.status(200).json({
+        success: true,
+        -name-s: -name-s
+    });
+});
+
+
+export {get-name-s};
