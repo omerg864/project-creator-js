@@ -27,6 +27,16 @@ def main():
         input_collection = input('Enter Collection Name: (To Stop Enter q)')
         if input_collection != "q":
             collections.append(input_collection)
+    frontend = input('Create react app as well? (yes)')
+    if frontend == 'yes' or frontend == '':
+        frontend = True
+    else:
+        frontend = False
+    redux = input('use redux template? (yes)')
+    if redux == 'yes' or redux == '':
+        redux = True
+    else:
+        redux = False
     for collection in collections:
         model_txt = open(main_dir + "/model.txt", "r")
         route_txt = open(main_dir + "/route.txt", "r")
@@ -55,6 +65,11 @@ def main():
     os.system('cmd /c "npm init"')
     os.system('cmd /c "npm install dotenv express mongoose express-async-handler"')
     os.system('cmd /c "npm install -D nodemon concurrently"')
+    if frontend:
+        if redux:
+            os.system('cmd /c "npx create-react-app frontend --template redux"')
+        else:
+            os.system('cmd /c "npx create-react-app frontend"')
 
 
 
