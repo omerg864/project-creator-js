@@ -1,13 +1,10 @@
 import os
+import platform
 
 
-def main():
-    main_dir = os.getcwd() + "/src"
-    project_name = input('Project name: ')
-    os.mkdir(project_name)
-    os.chdir(project_name)
-    os.mkdir('backend')
-    os.chdir('backend')
+def expressBaseCreate(backend_name, main_dir):
+    os.mkdir(backend_name)
+    os.chdir(backend_name)
     os.mkdir('controllers')
     os.mkdir('models')
     os.mkdir('routes')
@@ -21,55 +18,106 @@ def main():
     db_txt = open(main_dir + "/db.txt", "r")
     db.write(db_txt.read())
     os.chdir('..')
+
+
+def expressCollectionCreate(collection, main_dir):
+    model_txt = open(main_dir + "/model.txt", "r")
+    route_txt = open(main_dir + "/route.txt", "r")
+    controller_txt = open(main_dir + "/controller.txt", "r")
+    capitalized_collection = collection[0].upper() + collection[1:]
+    lower_collection = collection[0].lower() + collection[1:]
+    os.chdir('models')
+    open(collection + "Model"  + ".js", "w").write(model_txt.read().replace("-model_name-", lower_collection).replace("-model_name-", capitalized_collection)
+    .replace("-model_name-", lower_collection))
+    os.chdir('..')
+    os.chdir('routes')
+    open(collection + "Routes" + ".js", "w").write(route_txt.read().replace("-name-", capitalized_collection))
+    os.chdir('..')
+    os.chdir('controllers')
+    open(collection + "Controller" + ".js", "w").write(controller_txt.read().replace("-name-", capitalized_collection).replace("-name-", lower_collection)
+    .replace("-name-", capitalized_collection).replace("-name-", lower_collection).replace("-name-", capitalized_collection).replace("-name-", lower_collection)
+    .replace("-name-", lower_collection).replace("-name-", capitalized_collection))
+    model_txt.close()
+    route_txt.close()
+    controller_txt.close()
+    os.chdir('..')
+
+def nestCollectionCreate(collection):
+    os.system('cmd /c "nest g mo ' + collection + "\"")
+    os.system('cmd /c "nest g co ' + collection + "\"")
+    os.system('cmd /c "nest g s ' + collection + "\"")
+
+def main():
+    main_dir = os.getcwd() + "/src"
+    project_name = input('Project name: ')
+    os.mkdir(project_name)
+    os.chdir(project_name)
+    backend_name = input('Backend name: ')
+    backend_type = input('Backend type: (options: nest, express) \n (default: ExpressJS)')
+    if backend_type == 'express' or backend_type == '':
+        expressBaseCreate(backend_name, main_dir)
+    else:
+        os.system('cmd /c "nest new ' + backend_name + "\"")
     collections = []
     input_collection = ""
     while input_collection != "q":
         input_collection = input('Enter Collection Name: (To Stop Enter q)')
         if input_collection != "q":
             collections.append(input_collection)
-    frontend = input('Create react app as well? (yes)')
+    frontend = input('Create frontend as well? (yes)')
     if frontend == 'yes' or frontend == '':
         frontend = True
     else:
         frontend = False
-    redux = input('use redux template? (yes)')
-    if redux == 'yes' or redux == '':
-        redux = True
-    else:
-        redux = False
-    for collection in collections:
-        model_txt = open(main_dir + "/model.txt", "r")
-        route_txt = open(main_dir + "/route.txt", "r")
-        controller_txt = open(main_dir + "/controller.txt", "r")
-        capitalized_collection = collection[0].upper() + collection[1:]
-        lower_collection = collection[0].lower() + collection[1:]
-        os.chdir('models')
-        open(collection + "Model"  + ".js", "w").write(model_txt.read().replace("-model_name-", lower_collection).replace("-model_name-", capitalized_collection)
-        .replace("-model_name-", lower_collection))
-        os.chdir('..')
-        os.chdir('routes')
-        open(collection + "Routes" + ".js", "w").write(route_txt.read().replace("-name-", capitalized_collection))
-        os.chdir('..')
-        os.chdir('controllers')
-        open(collection + "Controller" + ".js", "w").write(controller_txt.read().replace("-name-", capitalized_collection).replace("-name-", lower_collection)
-        .replace("-name-", capitalized_collection).replace("-name-", lower_collection).replace("-name-", capitalized_collection).replace("-name-", lower_collection)
-        .replace("-name-", lower_collection).replace("-name-", capitalized_collection))
-        model_txt.close()
-        route_txt.close()
-        controller_txt.close()
-        os.chdir('..')
-    os.chdir('middleware')
-    open("errorMiddleware.js", "w").write(open(main_dir + "/errorMid.txt", "r").read())
-    os.chdir('..')
-    os.chdir('..')
-    os.system('cmd /c "npm init"')
-    os.system('cmd /c "npm install dotenv express mongoose express-async-handler"')
-    os.system('cmd /c "npm install -D nodemon concurrently"')
+    choiceFrontend = ''
     if frontend:
-        if redux:
-            os.system('cmd /c "npx create-react-app frontend --template redux"')
+        frontend_name = input('Frontend name: ')
+        choiceFrontend = input('Choose frontend framework: \n (options: vue, react)\n (default: react)')
+        if choiceFrontend != 'vue':
+            typescript = input('Use typeScript template? (yes)')
+    for collection in collections:
+        if backend_type == 'express' or backend_type == '':
+            expressCollectionCreate(collection, main_dir)
         else:
-            os.system('cmd /c "npx create-react-app frontend"')
+            os.system('cmd /c "cd ' + backend_name + "\"")
+            nestCollectionCreate(collection)
+    if backend_type == 'express' or backend_type == '':
+        os.chdir('middleware')
+        open("errorMiddleware.js", "w").write(open(main_dir + "/errorMid.txt", "r").read())
+        os.chdir('..')
+        if platform.system() == 'Windows':
+            os.system('cmd /c "npm init"')
+            os.system('cmd /c "npm install dotenv express mongoose express-async-handler"')
+            os.system('cmd /c "npm install -D nodemon concurrently"')
+        else:
+            os.system("sudo npm init")
+            os.system("sudo npm install dotenv express mongoose express-async-handler")
+            os.system("sudo npm install -D nodemon concurrently")
+    else:
+        if platform.system() == 'Windows':
+            os.system('cmd /c "npm install dotenv mongoose"')
+            os.system('cmd /c "cd .."')
+        else:
+            os.system("sudo npm install dotenv mongoose")
+            os.system('cmd /c "cd .."')
+    if frontend:
+        os.chdir('..')
+        if choiceFrontend != 'vue':
+            if typescript == 'yes' or typescript == '':
+                if platform.system() == 'Windows':
+                    os.system("cmd /c \"npx create-react-app " + frontend_name + " --template typescript\"")
+                else:
+                    os.system("sudo npx create-react-app " + frontend_name + " --template typescript")
+            else:
+                if platform.system() == 'Windows':
+                    os.system("cmd /c \"npx create-react-app " + frontend_name + "\"")
+                else:
+                    os.system("sudo npx create-react-app " + frontend_name)
+        else:
+            if platform.system() == 'Windows':
+                os.system("cmd /c \"vue create " + frontend_name + "\"")
+            else:
+                os.system("sudo vue create " + frontend_name)
 
 
 
