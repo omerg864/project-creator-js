@@ -1,6 +1,7 @@
 import os
 import platform
 
+useRoute = []
 
 def expressBaseCreate(backend_name, main_dir):
     os.mkdir(backend_name)
@@ -10,7 +11,7 @@ def expressBaseCreate(backend_name, main_dir):
     os.mkdir('routes')
     os.mkdir('config')
     os.mkdir('middleware')
-    open("server.js", "w").write(open(main_dir +"/server.txt", "r").read())
+    open("server.js", "w").write(open(main_dir +"/serverImports.txt", "r").read())
     open(".env", "w").write("NODE_ENV=development\nPORT=5000\nMONGO_URI=''")
     open(".gitignore", "w").write(".env\nnode_modules\n.DS_Store\npackage-lock.json\n")
     os.chdir('config')
@@ -41,6 +42,9 @@ def expressCollectionCreate(collection, main_dir):
     route_txt.close()
     controller_txt.close()
     os.chdir('..')
+    useRoute.append(f'\napp.use("/api/{lower_collection}", {lower_collection}Router);')
+    importName = "\nimport " + lower_collection + "Router from './routes/" + lower_collection + "Routes.js';"
+    open("server.js", "a").write(importName)
 
 def nestCollectionCreate(collection):
     os.system('cmd /c "nest g mo ' + collection + "\"")
@@ -82,6 +86,13 @@ def main():
             os.system('cmd /c "cd ' + backend_name + "\"")
             nestCollectionCreate(collection)
     if backend_type == 'express' or backend_type == '':
+        serverJS = open("server.js", "a")
+        serverJS.write("\n\n")
+        serverJS.write(open(main_dir +"/serverBase.txt", "r").read())
+        for route in useRoute:
+            serverJS.write(route)
+        serverJS.write(open(main_dir +"/serverProd.txt", "r").read())
+        serverJS.close()
         os.chdir('middleware')
         open("errorMiddleware.js", "w").write(open(main_dir + "/errorMid.txt", "r").read())
         os.chdir('..')
