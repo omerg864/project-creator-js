@@ -32,7 +32,7 @@ def expressCollectionCreate(collection, main_dir):
     .replace("-model_name-", lower_collection))
     os.chdir('..')
     os.chdir('routes')
-    open(collection + "Routes" + ".js", "w").write(route_txt.read().replace("-name-", capitalized_collection))
+    open(collection + "Routes" + ".js", "w").write(route_txt.read().replace("-name-", capitalized_collection).replace("-name-", lower_collection).replace("-name-", capitalized_collection))
     os.chdir('..')
     os.chdir('controllers')
     open(collection + "Controller" + ".js", "w").write(controller_txt.read().replace("-name-", capitalized_collection).replace("-name-", lower_collection)
@@ -98,18 +98,18 @@ def main():
         os.chdir('..')
         if platform.system() == 'Windows':
             os.system('cmd /c "npm init"')
-            os.system('cmd /c "npm install dotenv express mongoose express-async-handler"')
+            os.system('cmd /c "npm install dotenv express mongoose express-async-handler cors"')
             os.system('cmd /c "npm install -D nodemon concurrently"')
         else:
             os.system("sudo npm init")
-            os.system("sudo npm install dotenv express mongoose express-async-handler")
+            os.system("sudo npm install dotenv express mongoose express-async-handler cors")
             os.system("sudo npm install -D nodemon concurrently")
     else:
         if platform.system() == 'Windows':
-            os.system('cmd /c "npm install dotenv mongoose"')
+            os.system('cmd /c "npm install dotenv mongoose cors"')
             os.system('cmd /c "cd .."')
         else:
-            os.system("sudo npm install dotenv mongoose")
+            os.system("sudo npm install dotenv mongoose cors")
             os.system('cmd /c "cd .."')
     if frontend:
         os.chdir('..')

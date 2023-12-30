@@ -1,8 +1,9 @@
 import express from 'express';
+import { get-name- } from '../controllers/-name-Controller.js';
 const router = express.Router();
 
 
-router.route('/', get-name-);
+router.route('/').get(get-name-);
 
 
 export default router;
